@@ -16,6 +16,7 @@ import {
 	PointElement,
 	Filler,
 } from "chart.js";
+import { useAppDispatch } from "../../store/hooks";
 ChartJS.register(
 	Title,
 	Tooltip,
@@ -86,6 +87,7 @@ function CurrencyPage() {
 	}, [chartData]);
 	useEffect(() => {
 		const fetchCurrency = async () => {
+			
 			const data = await axios.get(`https://api.coincap.io/v2/assets/${id}`);
 			const history = await axios.get(
 				`https://api.coincap.io/v2/assets/${id}/history?interval=d1`

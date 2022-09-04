@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import styled from "styled-components";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { addCurrency } from "../store/reducers/UserReducer";
 const AddButton = styled.button`
 	border: none;
   width:fit-content;
@@ -71,8 +73,33 @@ const ModalWindow = styled.div`
     border-radius: 5px;
   }
 `;
-function AddCurrencyButton() {
+
+type AddButtonPropsType = {
+	id:string
+	name:string
+}
+function AddCurrencyButton(props: AddButtonPropsType) {
+	
+	const dispatch = useAppDispatch()
 	const [showModal, setShowModal] = useState<boolean>(false);
+	const [amount, setAmount] = useState<number>(0)
+	const [strAmount, setstrAmount] = useState("0")
+	const user = useAppSelector(state=>state.user)
+	const onInputChange = (e:ChangeEvent<HTMLInputElement>)=>{
+		const inputVal = e.currentTarget.value;
+		setstrAmount(inputVal)
+		setAmount(Number(inputVal))
+		
+	}
+	const onAddButtonClick = (id:string, name:string) => {
+		if(amount !== 0)
+		dispatch(addCurrency({id, name, amount}))
+		console.log(user);
+		setstrAmount('0')
+		
+	}
+	 useEffect (()=>{console.log(user);
+	}, [user])
 	return (
 		<>
 			<AddButton onClick={() => setShowModal(!showModal)}>+</AddButton>
@@ -83,9 +110,9 @@ function AddCurrencyButton() {
 						<span onClick={() => setShowModal(false)}>х</span>
             <h2>Добавление криптовалюты в портфель</h2>
 						<label>Количество криптовалюты</label>
-						<input type="number" step=".1" />
+						<input type="number" step=".1" value={strAmount}  onChange={(e)=>onInputChange(e)}/>
 						<div>
-							<button>Добавить в портфель</button>{" "}
+							<button onClick={() => onAddButtonClick(props.id, props.name)}>Добавить в портфель</button>
 						</div>
 					</ModalWindow>
 				</ModalWrapper>

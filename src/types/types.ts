@@ -12,3 +12,9 @@ export type currencyType = {
 	vwap24Hr: string;
 	explorer: string;
 };
+
+export type currencyHistoryType = {
+	priceUsd: string;
+	time: string;
+	date: string;
+}

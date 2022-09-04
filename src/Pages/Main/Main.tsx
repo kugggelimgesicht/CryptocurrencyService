@@ -4,11 +4,13 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../../common/Header/Header";
 import { currencyType } from "../../types/types";
-import AddCurrencyButton from "./AddCurrencyButton";
+import AddCurrencyButton from "../../common/AddCurrencyButton";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { fetchCurrencies } from "../../store/reducers/CryptocurrenciesReducer";
 
 const Table = styled.table`
 
-	font-size: 2em;
+	font-size: 1.5em;
 	font-weight: bold;
 	margin: auto;
 	table-layout: fixed;
@@ -53,22 +55,19 @@ const PaginationElement = styled.li<{ chosen: boolean }>`
 
 
 function Main() {
-	const [currencies, setCurrencies] = useState<Array<currencyType> | undefined>(
-		undefined
-	);
+	const dispatch = useAppDispatch();
+
+	const currencies = useAppSelector((state) => state.cryptocurrencies.currencies);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [currenciesPerPage, setCurrenciesPerPage] = useState(10);
 
 	const handlePageChange = (event: MouseEvent<HTMLElement>) => {
+		
 		setCurrentPage(Number((event.target as Element).id));
 	};
 	useEffect(() => {
-		const fetchCurrencies = async () => {
-			const data = await axios.get("https://api.coincap.io/v2/assets");
-			setCurrencies(data.data.data);
-			console.log(data);
-		};
-		fetchCurrencies();
+		dispatch(fetchCurrencies())
+		
 	}, []);
 	const indexOfLastCurrencies = currentPage * currenciesPerPage;
 	const indexOfFirstCurrencies = indexOfLastCurrencies - currenciesPerPage;
@@ -80,7 +79,7 @@ function Main() {
 	const renderCurrencies = currentCurrencies?.map((currency) => (
 		<tr key={currency.id}>
 			<td>
-				<AddCurrencyButton />
+				<AddCurrencyButton id={currency.id} name={currency.name}/>
 				<Link to={`/currency/${currency.id}`}>
 					{currency.name} ({currency.symbol})
 				</Link>
